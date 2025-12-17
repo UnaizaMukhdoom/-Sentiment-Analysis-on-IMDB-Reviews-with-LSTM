@@ -8,7 +8,11 @@ import json
 import pickle
 from zipfile import ZipFile
 import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix, classification_report, roc_curve, auc
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Embedding, LSTM
 from tensorflow.keras.preprocessing.text import Tokenizer
@@ -102,7 +106,178 @@ def train_model(model, X_train, Y_train, X_test, Y_test):
     print(f"Test Loss: {loss:.4f}")
     print(f"Test Accuracy: {accuracy:.4f}")
     
-    return history
+    return history, loss, accuracy
+
+
+def plot_training_history(history):
+    """Plot training history - accuracy and loss curves"""
+    print("\nGenerating training visualizations...")
+    
+    # Create results directory
+    os.makedirs("results", exist_ok=True)
+    
+    # Set style
+    plt.style.use('seaborn-v0_8-darkgrid')
+    
+    # Create figure with two subplots
+    fig, axes = plt.subplots(1, 2, figsize=(15, 5))
+    
+    # Plot accuracy
+    axes[0].plot(history.history['accuracy'], label='Training Accuracy', linewidth=2)
+    axes[0].plot(history.history['val_accuracy'], label='Validation Accuracy', linewidth=2)
+    axes[0].set_title('Model Accuracy Over Epochs', fontsize=14, fontweight='bold')
+    axes[0].set_xlabel('Epoch', fontsize=12)
+    axes[0].set_ylabel('Accuracy', fontsize=12)
+    axes[0].legend(loc='lower right', fontsize=10)
+    axes[0].grid(True, alpha=0.3)
+    
+    # Plot loss
+    axes[1].plot(history.history['loss'], label='Training Loss', linewidth=2)
+    axes[1].plot(history.history['val_loss'], label='Validation Loss', linewidth=2)
+    axes[1].set_title('Model Loss Over Epochs', fontsize=14, fontweight='bold')
+    axes[1].set_xlabel('Epoch', fontsize=12)
+    axes[1].set_ylabel('Loss', fontsize=12)
+    axes[1].legend(loc='upper right', fontsize=10)
+    axes[1].grid(True, alpha=0.3)
+    
+    plt.tight_layout()
+    plt.savefig('results/training_history.png', dpi=300, bbox_inches='tight')
+    print("✓ Training history plot saved to results/training_history.png")
+    plt.close()
+
+
+def plot_confusion_matrix(Y_test, Y_pred):
+    """Plot confusion matrix"""
+    print("\nGenerating confusion matrix...")
+    
+    # Calculate confusion matrix
+    cm = confusion_matrix(Y_test, Y_pred)
+    
+    # Create figure
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', square=True,
+                xticklabels=['Negative', 'Positive'],
+                yticklabels=['Negative', 'Positive'],
+                cbar_kws={'label': 'Count'})
+    
+    plt.title('Confusion Matrix - Sentiment Classification', fontsize=14, fontweight='bold', pad=20)
+    plt.ylabel('True Label', fontsize=12)
+    plt.xlabel('Predicted Label', fontsize=12)
+    
+    # Add accuracy information
+    accuracy = (cm[0][0] + cm[1][1]) / cm.sum()
+    plt.text(0.5, -0.15, f'Overall Accuracy: {accuracy:.2%}', 
+             ha='center', transform=plt.gca().transAxes, fontsize=11)
+    
+    plt.tight_layout()
+    plt.savefig('results/confusion_matrix.png', dpi=300, bbox_inches='tight')
+    print("✓ Confusion matrix saved to results/confusion_matrix.png")
+    plt.close()
+    
+    return cm
+
+
+def plot_roc_curve(Y_test, Y_pred_proba):
+    """Plot ROC curve"""
+    print("\nGenerating ROC curve...")
+    
+    # Calculate ROC curve
+    fpr, tpr, thresholds = roc_curve(Y_test, Y_pred_proba)
+    roc_auc = auc(fpr, tpr)
+    
+    # Create figure
+    plt.figure(figsize=(8, 6))
+    plt.plot(fpr, tpr, color='darkorange', lw=2, label=f'ROC curve (AUC = {roc_auc:.2f})')
+    plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--', label='Random Classifier')
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel('False Positive Rate', fontsize=12)
+    plt.ylabel('True Positive Rate', fontsize=12)
+    plt.title('ROC Curve - LSTM Sentiment Classifier', fontsize=14, fontweight='bold')
+    plt.legend(loc="lower right", fontsize=10)
+    plt.grid(True, alpha=0.3)
+    
+    plt.tight_layout()
+    plt.savefig('results/roc_curve.png', dpi=300, bbox_inches='tight')
+    print(f"✓ ROC curve saved to results/roc_curve.png (AUC: {roc_auc:.4f})")
+    plt.close()
+    
+    return roc_auc
+
+
+def generate_classification_report(Y_test, Y_pred):
+    """Generate and save classification report"""
+    print("\nGenerating classification report...")
+    
+    # Generate report
+    report = classification_report(Y_test, Y_pred, 
+                                   target_names=['Negative', 'Positive'],
+                                   digits=4)
+    
+    print("\n" + "="*60)
+    print("CLASSIFICATION REPORT")
+    print("="*60)
+    print(report)
+    
+    # Save to file
+    with open('results/classification_report.txt', 'w') as f:
+        f.write("IMDB Sentiment Analysis - Classification Report\n")
+        f.write("="*60 + "\n\n")
+        f.write(report)
+    
+    print("\n✓ Classification report saved to results/classification_report.txt")
+    
+    return report
+
+
+def evaluate_model(model, X_test, Y_test):
+    """Comprehensive model evaluation with visualizations"""
+    print("\n" + "="*60)
+    print("COMPREHENSIVE MODEL EVALUATION")
+    print("="*60)
+    
+    # Get predictions
+    Y_pred_proba = model.predict(X_test, verbose=0).flatten()
+    Y_pred = (Y_pred_proba > 0.5).astype(int)
+    
+    # Plot confusion matrix
+    cm = plot_confusion_matrix(Y_test, Y_pred)
+    
+    # Generate classification report
+    report = generate_classification_report(Y_test, Y_pred)
+    
+    # Plot ROC curve
+    roc_auc = plot_roc_curve(Y_test, Y_pred_proba)
+    
+    # Calculate additional metrics
+    tn, fp, fn, tp = cm.ravel()
+    precision = tp / (tp + fp)
+    recall = tp / (tp + fn)
+    f1_score = 2 * (precision * recall) / (precision + recall)
+    
+    print("\n" + "="*60)
+    print("SUMMARY METRICS")
+    print("="*60)
+    print(f"True Negatives:  {tn:>6}    True Positives:  {tp:>6}")
+    print(f"False Negatives: {fn:>6}    False Positives: {fp:>6}")
+    print(f"\nPrecision: {precision:.4f}")
+    print(f"Recall:    {recall:.4f}")
+    print(f"F1-Score:  {f1_score:.4f}")
+    print(f"ROC AUC:   {roc_auc:.4f}")
+    print("="*60)
+    
+    # Save metrics to file
+    with open('results/metrics_summary.txt', 'w') as f:
+        f.write("IMDB Sentiment Analysis - Model Performance Metrics\n")
+        f.write("="*60 + "\n\n")
+        f.write(f"True Negatives:  {tn:>6}    True Positives:  {tp:>6}\n")
+        f.write(f"False Negatives: {fn:>6}    False Positives: {fp:>6}\n")
+        f.write(f"\nPrecision: {precision:.4f}\n")
+        f.write(f"Recall:    {recall:.4f}\n")
+        f.write(f"F1-Score:  {f1_score:.4f}\n")
+        f.write(f"ROC AUC:   {roc_auc:.4f}\n")
+    
+    print("\n✓ Metrics summary saved to results/metrics_summary.txt")
 
 
 def save_model_and_tokenizer(model, tokenizer):
@@ -114,12 +289,12 @@ def save_model_and_tokenizer(model, tokenizer):
     
     # Save the model
     model.save("models/sentiment_model.h5")
-    print("Model saved to models/sentiment_model.h5")
+    print("✓ Model saved to models/sentiment_model.h5")
     
     # Save the tokenizer
     with open("models/tokenizer.pkl", "wb") as f:
         pickle.dump(tokenizer, f)
-    print("Tokenizer saved to models/tokenizer.pkl")
+    print("✓ Tokenizer saved to models/tokenizer.pkl")
 
 
 def main():
@@ -138,13 +313,31 @@ def main():
     model = build_model()
     
     # Train model
-    train_model(model, X_train, Y_train, X_test, Y_test)
+    history, test_loss, test_accuracy = train_model(model, X_train, Y_train, X_test, Y_test)
+    
+    # Plot training history
+    plot_training_history(history)
+    
+    # Comprehensive evaluation
+    evaluate_model(model, X_test, Y_test)
     
     # Save model and tokenizer
     save_model_and_tokenizer(model, tokenizer)
     
     print("\n" + "="*60)
-    print("Training complete! Model ready for deployment.")
+    print("TRAINING COMPLETE!")
+    print("="*60)
+    print("\n📊 Generated visualizations:")
+    print("   • results/training_history.png")
+    print("   • results/confusion_matrix.png")
+    print("   • results/roc_curve.png")
+    print("\n📄 Generated reports:")
+    print("   • results/classification_report.txt")
+    print("   • results/metrics_summary.txt")
+    print("\n🤖 Saved model files:")
+    print("   • models/sentiment_model.h5")
+    print("   • models/tokenizer.pkl")
+    print("\n✅ Model is ready for deployment!")
     print("="*60)
 
 
