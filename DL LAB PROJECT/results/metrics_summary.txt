@@ -1,0 +1,10 @@
+IMDB Sentiment Analysis - Model Performance Metrics
+============================================================
+
+True Negatives:    4346    True Positives:    4430
+False Negatives:    609    False Positives:    615
+
+Precision: 0.8781
+Recall:    0.8791
+F1-Score:  0.8786
+ROC AUC:   0.9456
