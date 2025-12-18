@@ -10,10 +10,10 @@
     --secondary-color: #764ba2;
     --success-color: #10b981;
     --danger-color: #ef4444;
-    --dark-bg: #0f172a;
-    --card-bg: #1e293b;
-    --text-primary: #f1f5f9;
-    --text-secondary: #94a3b8;
+    --dark-bg: #f3f4f6; /* gray-100 */
+    --card-bg: #e5e7eb; /* gray-200 */
+    --text-primary: #111827; /* gray-900 */
+    --text-secondary: #4b5563; /* gray-600 */
     --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
@@ -33,14 +33,15 @@ body {
 
 /* Navbar */
 .navbar {
-    background: rgba(15, 23, 42, 0.95);
+    background: rgba(229, 231, 235, 0.95); /* gray-200 */
     backdrop-filter: blur(10px);
     padding: 1rem 0;
     position: fixed;
     width: 100%;
     top: 0;
     z-index: 1000;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    border-bottom: 1px solid #d1d5db; /* gray-300 */
 }
 
 .navbar .container {
@@ -81,7 +82,7 @@ body {
 /* Hero Section */
 .hero {
     padding: 150px 0 100px;
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
     position: relative;
     overflow: hidden;
 }
@@ -94,7 +95,7 @@ body {
     background: var(--gradient);
     border-radius: 50%;
     filter: blur(100px);
-    opacity: 0.1;
+    opacity: 0.15;
     top: -200px;
     right: -200px;
 }
@@ -179,10 +180,11 @@ body {
     background: var(--card-bg);
     color: var(--text-primary);
     margin-left: 10px;
+    border: 1px solid #e2e8f0;
 }
 
 .btn-secondary:hover {
-    background: #334155;
+    background: #e2e8f0;
 }
 
 .btn-large {
@@ -220,11 +222,12 @@ body {
     border-radius: 16px;
     text-align: center;
     transition: transform 0.3s, box-shadow 0.3s;
+    border: 1px solid #d1d5db; /* gray-300 */
 }
 
 .feature-card:hover {
     transform: translateY(-10px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
 
 .feature-icon {
@@ -253,7 +256,7 @@ body {
 /* Analysis Section */
 .analysis-section {
     padding: 100px 0;
-    background: linear-gradient(180deg, var(--dark-bg) 0%, #1e293b 100%);
+    background: linear-gradient(180deg, #f3f4f6 0%, #e5e7eb 100%);
 }
 
 .analysis-container {
@@ -268,7 +271,8 @@ body {
     background: var(--card-bg);
     padding: 30px;
     border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    border: 1px solid #d1d5db; /* gray-300 */
 }
 
 .panel-header {
@@ -277,7 +281,7 @@ body {
     gap: 10px;
     margin-bottom: 20px;
     padding-bottom: 15px;
-    border-bottom: 2px solid #334155;
+    border-bottom: 2px solid #d1d5db; /* gray-300 */
 }
 
 .panel-header i {
@@ -292,8 +296,8 @@ body {
 textarea {
     width: 100%;
     padding: 15px;
-    background: #0f172a;
-    border: 2px solid #334155;
+    background: #f9fafb; /* gray-50 */
+    border: 2px solid #d1d5db; /* gray-300 */
     border-radius: 8px;
     color: var(--text-primary);
     font-family: 'Poppins', sans-serif;
@@ -305,6 +309,7 @@ textarea {
 textarea:focus {
     outline: none;
     border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .char-count {
@@ -324,8 +329,8 @@ textarea:focus {
 .btn-example {
     flex: 1;
     padding: 10px;
-    background: #0f172a;
-    border: 1px solid #334155;
+    background: #f9fafb; /* gray-50 */
+    border: 1px solid #d1d5db; /* gray-300 */
     border-radius: 8px;
     color: var(--text-primary);
     cursor: pointer;
@@ -339,7 +344,8 @@ textarea:focus {
 
 .btn-example:hover {
     border-color: var(--primary-color);
-    background: rgba(102, 126, 234, 0.1);
+    background: rgba(102, 126, 234, 0.05);
+    transform: translateY(-1px);
 }
 
 /* Results Panel */
@@ -352,7 +358,7 @@ textarea:focus {
     width: 50px;
     height: 50px;
     margin: 0 auto 20px;
-    border: 4px solid #334155;
+    border: 4px solid #d1d5db; /* gray-300 */
     border-top-color: var(--primary-color);
     border-radius: 50%;
     animation: spin 1s linear infinite;
@@ -406,7 +412,7 @@ textarea:focus {
 
 .confidence-bar {
     height: 30px;
-    background: #0f172a;
+    background: #d1d5db; /* gray-300 */
     border-radius: 15px;
     overflow: hidden;
 }
@@ -431,10 +437,11 @@ textarea:focus {
 }
 
 .stat-card {
-    background: #0f172a;
+    background: #f9fafb; /* gray-50 */
     padding: 20px;
     border-radius: 12px;
     text-align: center;
+    border: 1px solid #d1d5db; /* gray-300 */
 }
 
 .stat-card i {
@@ -480,9 +487,10 @@ textarea:focus {
 
 /* Footer */
 .footer {
-    background: #0a0f1a;
+    background: #e5e7eb; /* gray-200 */
     padding: 60px 0 30px;
     margin-top: 100px;
+    border-top: 1px solid #d1d5db; /* gray-300 */
 }
 
 .footer-content {
@@ -514,7 +522,7 @@ textarea:focus {
 .footer-bottom {
     text-align: center;
     padding-top: 30px;
-    border-top: 1px solid #334155;
+    border-top: 1px solid #d1d5db; /* gray-300 */
     color: var(--text-secondary);
 }
 
