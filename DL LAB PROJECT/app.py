@@ -23,14 +23,19 @@ def load_model_and_tokenizer():
     """Load the trained model and tokenizer"""
     global model, tokenizer
     try:
+        print("\n[LOADING] Attempting to load trained LSTM model...")
         model = load_model("models/sentiment_model.h5")
+        print("[SUCCESS] ✓ LSTM model loaded from models/sentiment_model.h5")
+        
+        print("[LOADING] Loading tokenizer...")
         with open("models/tokenizer.pkl", "rb") as f:
             tokenizer = pickle.load(f)
-        print("Model and tokenizer loaded successfully!")
+        print("[SUCCESS] ✓ Tokenizer loaded from models/tokenizer.pkl")
+        print("[MODE] 🤖 AI MODE ACTIVE - Using trained LSTM neural network for predictions\n")
         return True
     except Exception as e:
-        print(f"Error loading model: {str(e)}")
-        print("Running in DEMO mode - using simple sentiment analysis")
+        print(f"\n[ERROR] ❌ Failed to load model: {str(e)}")
+        print("[MODE] 📝 DEMO MODE ACTIVE - Using keyword-based sentiment analysis\n")
         return False
 
 
@@ -38,6 +43,9 @@ def predict_sentiment(review):
     """Predict sentiment of a review"""
     # Demo mode: simple keyword-based analysis if model not loaded
     if model is None or tokenizer is None:
+        print("\n[PREDICTION] Using DEMO mode (keyword-based analysis)")
+        print(f"[INPUT] Review length: {len(review.split())} words")
+        
         positive_words = ['good', 'great', 'excellent', 'amazing', 'fantastic', 'wonderful', 
                          'love', 'loved', 'best', 'awesome', 'superb', 'brilliant', 'perfect']
         negative_words = ['bad', 'terrible', 'awful', 'horrible', 'worst', 'hate', 'hated',
@@ -47,27 +55,45 @@ def predict_sentiment(review):
         pos_count = sum(1 for word in positive_words if word in review_lower)
         neg_count = sum(1 for word in negative_words if word in review_lower)
         
+        print(f"[ANALYSIS] Positive keywords found: {pos_count}, Negative keywords found: {neg_count}")
+        
         if pos_count > neg_count:
-            return "positive", 0.75 + (pos_count * 0.05), None
+            result = "positive", 0.75 + (pos_count * 0.05), None
+            print(f"[RESULT] Sentiment: POSITIVE, Confidence: {result[1]:.2%}\n")
+            return result
         elif neg_count > pos_count:
-            return "negative", 0.75 + (neg_count * 0.05), None
+            result = "negative", 0.75 + (neg_count * 0.05), None
+            print(f"[RESULT] Sentiment: NEGATIVE, Confidence: {result[1]:.2%}\n")
+            return result
         else:
-            return "positive", 0.55, None
+            result = "positive", 0.55, None
+            print(f"[RESULT] Sentiment: POSITIVE (neutral/default), Confidence: {result[1]:.2%}\n")
+            return result
     
     try:
+        print("\n[PREDICTION] 🤖 Using TRAINED LSTM MODEL")
+        print(f"[INPUT] Review length: {len(review.split())} words")
+        
         # Tokenize and pad the review
+        print("[PROCESSING] Tokenizing and padding review...")
         sequence = tokenizer.texts_to_sequences([review])
         padded_sequence = pad_sequences(sequence, maxlen=200)
+        print(f"[PROCESSING] Sequence shape: {padded_sequence.shape}")
         
         # Make prediction
+        print("[PROCESSING] Running neural network prediction...")
         prediction = model.predict(padded_sequence, verbose=0)
         confidence = float(prediction[0][0])
         
         sentiment = "positive" if confidence > 0.5 else "negative"
         confidence_score = confidence if confidence > 0.5 else 1 - confidence
         
+        print(f"[RESULT] ✓ Sentiment: {sentiment.upper()}, Confidence: {confidence_score:.2%}")
+        print(f"[RESULT] Raw model output: {confidence:.4f}\n")
+        
         return sentiment, confidence_score, None
     except Exception as e:
+        print(f"[ERROR] ❌ Prediction failed: {str(e)}\n")
         return None, None, str(e)
 
 
@@ -89,6 +115,9 @@ def predict():
                 'error': 'No review text provided'
             }), 400
         
+        print("\n" + "="*70)
+        print("[API REQUEST] New prediction request received")
+        print("="*70)
         sentiment, confidence, error = predict_sentiment(review)
         
         if error:

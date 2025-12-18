@@ -2,9 +2,7 @@
 const examples = {
     positive: "This movie was absolutely fantastic! The acting was superb, the cinematography was stunning, and the storyline kept me engaged from start to finish. The director did an amazing job bringing this story to life. Every scene was beautifully crafted and the emotions were perfectly conveyed. I would highly recommend this movie to anyone who loves great cinema. It's a masterpiece that deserves all the praise it's getting. I loved every single minute of it!",
     
-    negative: "This movie was a complete disappointment. The plot was confusing and poorly written, the acting felt forced and unnatural, and the pacing was incredibly slow. I found myself checking my watch multiple times throughout. The special effects were subpar and the dialogue was cringe-worthy. I really wanted to like this film, but it failed to deliver on every level. Save your money and time - this one is not worth watching. Absolutely terrible experience.",
-    
-    neutral: "The movie was okay, nothing special. Some parts were good while others fell flat. The acting was decent but the story could have been better developed. It had its moments but overall it was just average. Not the best movie I've seen but not the worst either. If you have free time, you might enjoy it, but don't go out of your way to watch it. It's a forgettable film that neither impresses nor disappoints greatly."
+    negative: "This movie was a complete disappointment. The plot was confusing and poorly written, the acting felt forced and unnatural, and the pacing was incredibly slow. I found myself checking my watch multiple times throughout. The special effects were subpar and the dialogue was cringe-worthy. I really wanted to like this film, but it failed to deliver on every level. Save your money and time - this one is not worth watching. Absolutely terrible experience."
 };
 
 // DOM Elements
