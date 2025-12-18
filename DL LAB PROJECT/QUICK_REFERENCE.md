@@ -25,7 +25,7 @@ python train_model.py
 ### Run Web Interface
 ```bash
 # Option 1: Professional Flask UI
-python app.py          # or python app_demo.py (without model)
+python app.py
 
 # Option 2: Simple Streamlit UI
 streamlit run app_streamlit.py
@@ -105,8 +105,7 @@ Actual  Neg  [TN]   [FP]
 |------|---------|
 | `train_model.py` | Train LSTM model + generate all visualizations |
 | `generate_visualizations.py` | Re-create visualizations from saved model |
-| `app.py` | Flask backend (needs trained model) |
-| `app_demo.py` | Demo Flask backend (keyword-based, no model needed) |
+| `app.py` | Flask backend (with fallback demo mode if model not found) |
 | `app_streamlit.py` | Streamlit UI (needs trained model) |
 | `requirements.txt` | Python dependencies |
 
